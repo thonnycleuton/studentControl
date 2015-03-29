@@ -16,8 +16,8 @@ public class DaoUtil {
 	 * 
 	 */
 
-	public static final int MAXIMUM_STUDENT_NUMBER = 99999999;
-	public static final int MINIMUM_STUDENT_NUMBER = 10000000;
+	public static final int MAXIMUM_STUDENT_NUMBER = 999999999;
+	public static final int MINIMUM_STUDENT_NUMBER = 100000000;
 	public static final int MINIMUM_PASSWORD = 6;
 	public static final int MAXIMUM_PASSWORD = 12;
 	

@@ -62,9 +62,9 @@ public class RegistrationServlet extends HttpServlet {
 						aStudent.setStudentNumber(Integer.parseInt(request.getParameter("StudentNumber")));
 
 						/*test if the user id is between 100000000 and 999999999*/
-						if(aStudent.getStudentNumber()<100000000 || aStudent.getStudentNumber()>999999999){
+						if(aStudent.getStudentNumber() < DaoUtil.MINIMUM_STUDENT_NUMBER || aStudent.getStudentNumber() > DaoUtil.MAXIMUM_STUDENT_NUMBER){
 
-							errorBuffer=appendError(errorBuffer, "The student id has to be between 100000000 and 999999999.");
+							errorBuffer.append("The StudentNumber must be between 100000000 and 999999999.");
 							session.setAttribute("errors", errorBuffer.toString());
 							response.sendRedirect("./registration.jsp");
 
@@ -74,18 +74,9 @@ public class RegistrationServlet extends HttpServlet {
 							if(Student.isExistingLogin(aStudent.getStudentNumber())){
 								System.out.println("Student ID "+aStudent.getStudentNumber()+" successfully validated!");						
 							} else {
-								if(errors == 0){
-									errors=errors+1;
-									errorBuffer=generateErrorHeader(errorBuffer);
-									errorBuffer=appendError(errorBuffer, "There is already a student with the id "+aStudent.getStudentNumber());
+									errorBuffer.append("There is already a student with the id ");
 									session.setAttribute("errors", errorBuffer.toString());
 									response.sendRedirect("./registration.jsp");
-								} else {
-									errors=errors+1;
-									errorBuffer=appendError(errorBuffer, "There is already a student with the id "+aStudent.getStudentNumber());
-									session.setAttribute("errors", errorBuffer.toString());
-									response.sendRedirect("./registration.jsp");
-								}						
 							}
 
 						}				
