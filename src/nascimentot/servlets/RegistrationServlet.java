@@ -6,14 +6,13 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import nascimentot.dao.StudentConnect;
-import nascimentot.exception.DuplicateStudentException;
+import nascimentot.exception.StudentNotFoundException;
 import nascimentot.model.Student;
 import nascimentot.util.DaoUtil;
 import nascimentot.util.EmailValidator;
 
 import java.sql.*;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * This Class is responsible to authenticate the user on system.
@@ -31,64 +30,110 @@ public class RegistrationServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException{
 
-		Student aStudent = new Student();
 
-		/**
-		 *  connect to database
-		 */
-		Connection c = StudentConnect.initialize();
-		/**
-		 * Initialize a connection for a new student
-		 */
-		Student.initialize(c);
-		/**
-		 * getting a new session
-		 */
-		HttpSession session = request.getSession(true);
-
-		StringBuffer errorBuffer = new StringBuffer();
-		EmailValidator emailAddress = new EmailValidator();
-		int errors = 0;
-
-		try{
+		try{ 
 			/**
-			 * test if the student number is not empty
+			 *  connect to database
 			 */
-			if(request.getParameter("studentNumber")!=""){
+			Connection c = StudentConnect.initialize();
+			/**
+			 * Initialize a connection for a new student
+			 */
+			Student.initialize(c);
+			/**
+			 * getting a new session
+			 */
+			HttpSession session = request.getSession(true);
+			/**
+			 * variable that will store the login
+			 */
 
-				try{
+			Student aStudent = new Student();
+			StringBuffer errorBuffer = new StringBuffer();
+			int errors = 0;
 
-					if(Integer.parseInt(request.getParameter("studentNumber")) >= DaoUtil.MINIMUM_STUDENT_NUMBER && 
-							Integer.parseInt(request.getParameter("studentNumber")) <= DaoUtil.MAXIMUM_STUDENT_NUMBER){
-							errorBuffer.append("The student id has to be between 100000000 and 999999999.");
+
+			try {
+
+				if(request.getParameter("StudentNumber")!=""){
+					/*try convert the student number in a integer*/
+					try{
+
+						aStudent.setStudentNumber(Integer.parseInt(request.getParameter("StudentNumber")));
+
+						/*test if the user id is between 100000000 and 999999999*/
+						if(aStudent.getStudentNumber()<100000000 || aStudent.getStudentNumber()>999999999){
+
+							errorBuffer=appendError(errorBuffer, "The student id has to be between 100000000 and 999999999.");
 							session.setAttribute("errors", errorBuffer.toString());
-							errors ++;
-					} else {
-						/*test is there is already this student id in the database*/
-						if(Student.isExistingLogin(aStudent.getStudentNumber())){
-							
-							aStudent.setStudentNumber(Integer.parseInt(request.getParameter("studentNumber")));
-							System.out.println("Student ID "+aStudent.getStudentNumber()+" successfully validated!");				
+							response.sendRedirect("./registration.jsp");
+
 						} else {
-							errorBuffer.append("There is already a student with the id ");
-							session.setAttribute("errors", errorBuffer.toString());
-							errors ++;		
-						}
-					}				
-				} catch (NumberFormatException nfe){
-					errorBuffer.append("The student id has to be a number.");
-					session.setAttribute("errors", errorBuffer.toString());
-					errors ++;
+
+							/*test is there is already this student id in the database*/
+							if(Student.isExistingLogin(aStudent.getStudentNumber())){
+								System.out.println("Student ID "+aStudent.getStudentNumber()+" successfully validated!");						
+							} else {
+								if(errors == 0){
+									errors=errors+1;
+									errorBuffer=generateErrorHeader(errorBuffer);
+									errorBuffer=appendError(errorBuffer, "There is already a student with the id "+aStudent.getStudentNumber());
+									session.setAttribute("errors", errorBuffer.toString());
+									response.sendRedirect("./registration.jsp");
+								} else {
+									errors=errors+1;
+									errorBuffer=appendError(errorBuffer, "There is already a student with the id "+aStudent.getStudentNumber());
+									session.setAttribute("errors", errorBuffer.toString());
+									response.sendRedirect("./registration.jsp");
+								}						
+							}
+
+						}				
+					} catch (NumberFormatException nfe){
+						errorBuffer.append("The Student Number must be a number");
+						session.setAttribute("errors", errorBuffer.toString());
+						response.sendRedirect("./registration.jsp");
+					}
+				} else {
+
+						errorBuffer.append("The student number cannot be empty!");
+						session.setAttribute("errors", errorBuffer.toString());
+						response.sendRedirect("./registration.jsp");
 				}
-			}
-			else {
 
-				errorBuffer.append("The student number cannot be empty!");
+				aStudent.setFirstName(request.getParameter("FirstName"));
+				aStudent.setLastName(request.getParameter("LastName"));
+				aStudent.setEmail(request.getParameter("EmailAddress"));
+				aStudent.setPhone(request.getParameter("PhoneNumber"));
+
+				Date birthDate = DaoUtil.stringToDate(
+
+						Integer.parseInt(request.getParameter("BirthYear")), 
+						Integer.parseInt(request.getParameter("BirthMonth")), 
+						Integer.parseInt(request.getParameter("BirthDay"))
+						);
+
+				aStudent.setBirthdate(birthDate );
+				aStudent.setPassword(request.getParameter("Password"));
+
+				Student.insert(aStudent);
+
+				/**
+				 *  redirect the response to a JSP
+				 */
+				response.sendRedirect("./VerifyCustInfo.jsp");
+			} catch (Exception e) {
+				/**
+				 * new code == way better, if I do say so myself
+				 * sending errors to the page thru the session
+				 */
+				errorBuffer.append("Please try again.");
+
 				session.setAttribute("errors", errorBuffer.toString());
-				errors ++;
+				response.sendRedirect("./registration.jsp");
 			}
 
-		}
+		}    
 		catch (Exception e) 
 		/**
 		 * Returns an exception in case of it doesn't get a connection
@@ -117,5 +162,16 @@ public class RegistrationServlet extends HttpServlet {
 		output.println(second);
 		output.close();
 	}
+
+	public StringBuffer appendError(StringBuffer sb, String message){
+		sb.append("<h4 style=\"margin-left: 40px;\"> - "+message+"</h4>");
+		return sb;
+	}
+
+	public StringBuffer generateErrorHeader(StringBuffer sb){
+		sb.append("<h3 style=\"margin-left: 30px; margin-top: 40px; color:red;\">Please watch the following errors</h3>");
+		return sb;
+	}
+
 
 }
