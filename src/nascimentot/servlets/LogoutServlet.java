@@ -37,7 +37,18 @@ public class LogoutServlet extends HttpServlet {
 			Connection c = StudentConnect.initialize();
 			Student.initialize(c);
 			HttpSession session = request.getSession();
+			
 			session.invalidate();
+			session.removeAttribute("StudentNumber");
+			session.removeAttribute("FirstName");
+			session.removeAttribute("LastName");
+			session.removeAttribute("EmailAddress");
+			session.removeAttribute("PhoneNumber");
+			session.removeAttribute("BirthYear");
+			session.removeAttribute("BirthMonth");
+			session.removeAttribute("BirthDay");
+			session.removeAttribute("Password");
+			session.removeAttribute("Repassword");
             response.sendRedirect("./login.jsp");
 
 		}catch (Exception e) //not connected

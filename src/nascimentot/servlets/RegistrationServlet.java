@@ -123,9 +123,7 @@ public class RegistrationServlet extends HttpServlet {
 						int birthDay = Integer.parseInt(request.getParameter("BirthDay"));
 
 						if (ValidateUtil.birthYear(birthYear) && ValidateUtil.birthMonth(birthMonth) && ValidateUtil.birthDay(birthDay)){
-							System.out.println("birthYear: " + ValidateUtil.birthYear(birthYear));
-							System.out.println("BirthMonth: " + ValidateUtil.birthYear(birthMonth));
-							System.out.println("BirthDay: " + ValidateUtil.birthYear(birthDay));
+							
 							Date birthDate = DaoUtil.stringToDate(birthYear, birthMonth, birthDay);
 							aStudent.setBirthdate(birthDate);
 						}else{
@@ -215,16 +213,5 @@ public class RegistrationServlet extends HttpServlet {
 		output.println(second);
 		output.close();
 	}
-
-	public StringBuffer appendError(StringBuffer sb, String message){
-		sb.append("<h4 style=\"margin-left: 40px;\"> - "+message+"</h4>");
-		return sb;
-	}
-
-	public StringBuffer generateErrorHeader(StringBuffer sb){
-		sb.append("<h3 style=\"margin-left: 30px; margin-top: 40px; color:red;\">Please watch the following errors</h3>");
-		return sb;
-	}
-
 
 }
