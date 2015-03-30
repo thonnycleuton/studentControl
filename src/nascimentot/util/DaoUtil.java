@@ -39,4 +39,9 @@ public class DaoUtil {
 		return birthday;
 
 	}
+	
+	public static boolean isEmpty(String field){
+
+		return (field.isEmpty() && field != null) ? true:false;
+	}
 }

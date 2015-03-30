@@ -10,6 +10,7 @@ import nascimentot.exception.StudentNotFoundException;
 import nascimentot.model.Student;
 import nascimentot.util.DaoUtil;
 import nascimentot.util.EmailValidator;
+import nascimentot.util.ValidateUtil;
 
 import java.sql.*;
 import java.util.Date;
@@ -30,8 +31,7 @@ public class RegistrationServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException{
 
-
-		try{ 
+		try{
 			/**
 			 *  connect to database
 			 */
@@ -50,75 +50,135 @@ public class RegistrationServlet extends HttpServlet {
 
 			Student aStudent = new Student();
 			StringBuffer errorBuffer = new StringBuffer();
-			int errors = 0;
-
-
+			boolean hasError = false;
 			try {
+				/**
+				 * Validating Student Number Field
+				 */
+				if(DaoUtil.isEmpty(request.getParameter("StudentNumber"))){
+					hasError = true;
+					errorBuffer.append("The student number cannot be empty!");
 
-				if(request.getParameter("StudentNumber")!=""){
+				} 
+				else {
+
 					/*try convert the student number in a integer*/
 					try{
 
 						aStudent.setStudentNumber(Integer.parseInt(request.getParameter("StudentNumber")));
 
-						/*test if the user id is between 100000000 and 999999999*/
 						if(aStudent.getStudentNumber() < DaoUtil.MINIMUM_STUDENT_NUMBER || aStudent.getStudentNumber() > DaoUtil.MAXIMUM_STUDENT_NUMBER){
 
 							errorBuffer.append("The StudentNumber must be between 100000000 and 999999999.");
-							session.setAttribute("errors", errorBuffer.toString());
-							response.sendRedirect("./registration.jsp");
 
-						} else {
-
-							/*test is there is already this student id in the database*/
-							if(Student.isExistingLogin(aStudent.getStudentNumber())){
-								System.out.println("Student ID "+aStudent.getStudentNumber()+" successfully validated!");						
-							} else {
-									errorBuffer.append("There is already a student with the id ");
-									session.setAttribute("errors", errorBuffer.toString());
-									response.sendRedirect("./registration.jsp");
-							}
-
-						}				
+						}
 					} catch (NumberFormatException nfe){
-						errorBuffer.append("The Student Number must be a number");
-						session.setAttribute("errors", errorBuffer.toString());
-						response.sendRedirect("./registration.jsp");
+						hasError = true;
+						errorBuffer.append("The Student Number must be a number\n");
 					}
-				} else {
-
-						errorBuffer.append("The student number cannot be empty!");
-						session.setAttribute("errors", errorBuffer.toString());
-						response.sendRedirect("./registration.jsp");
 				}
+
 
 				aStudent.setFirstName(request.getParameter("FirstName"));
 				aStudent.setLastName(request.getParameter("LastName"));
-				aStudent.setEmail(request.getParameter("EmailAddress"));
-				aStudent.setPhone(request.getParameter("PhoneNumber"));
 
-				Date birthDate = DaoUtil.stringToDate(
+				if(DaoUtil.isEmpty(request.getParameter("EmailAddress"))){
+					hasError = true;
+					errorBuffer.append("The Email Address cannot be empty!\n");
 
-						Integer.parseInt(request.getParameter("BirthYear")), 
-						Integer.parseInt(request.getParameter("BirthMonth")), 
-						Integer.parseInt(request.getParameter("BirthDay"))
-						);
+				} else if (ValidateUtil.email(request.getParameter("EmailAddress"))){
 
-				aStudent.setBirthdate(birthDate );
-				aStudent.setPassword(request.getParameter("Password"));
+					aStudent.setEmail(request.getParameter("EmailAddress"));
 
-				Student.insert(aStudent);
+				}else {
 
-				/**
-				 *  redirect the response to a JSP
-				 */
-				response.sendRedirect("./VerifyCustInfo.jsp");
+					hasError = true;
+					errorBuffer.append("Email not valid valid\n");
+
+				}
+
+				if(DaoUtil.isEmpty(request.getParameter("PhoneNumber"))){
+
+					hasError = true;
+					errorBuffer.append("The Phone Number cannot be empty!\n");
+
+				} else if (ValidateUtil.phone(request.getParameter("PhoneNumber"))){
+					aStudent.setPhone(request.getParameter("PhoneNumber"));
+				}
+				else{
+					hasError = true;
+					errorBuffer.append("Phone Number not valid\n");
+				}
+
+				Date birthDate;
+				if(DaoUtil.isEmpty(request.getParameter("BirthYear")) || DaoUtil.isEmpty(request.getParameter("BirthMonth")) || DaoUtil.isEmpty(request.getParameter("BirthDay"))){
+					hasError = true;
+					errorBuffer.append("The Date Field cannot be empty");
+				}
+				else{
+
+					try {
+						birthDate = DaoUtil.stringToDate(
+
+								Integer.parseInt(request.getParameter("BirthYear")), 
+								Integer.parseInt(request.getParameter("BirthMonth")), 
+								Integer.parseInt(request.getParameter("BirthDay"))
+								);
+
+						aStudent.setBirthdate(birthDate);
+
+					}catch (NumberFormatException	nfe) {
+
+						hasError = true;
+						session.setAttribute("errors", "The date must to be a number");
+					} 
+
+				} 
+				
+				if(DaoUtil.isEmpty(request.getParameter("Password"))){
+
+					hasError = true;
+					errorBuffer.append("The Password cannot be empty!\n");
+
+				}
+				else{
+					if (ValidateUtil.password(request.getParameter("Password"))){
+						if (request.getParameter("Password").equals(request.getParameter("Repassword"))){
+							aStudent.setPassword(request.getParameter("Password"));	
+						}
+						else{
+							hasError = true;
+							errorBuffer.append("The passwords entered are not the same\n");
+						}
+					}
+					else{
+
+						hasError = true;
+						errorBuffer.append("The passwords has an invalid format\n");
+					}
+				}
+
+
+
+				if (hasError) {
+					session.setAttribute("errors", errorBuffer.toString());
+					response.sendRedirect("./registration.jsp");
+				}else{
+
+					Student.insert(aStudent);
+					/**
+					 *  redirect the response to a JSP
+					 */
+					response.sendRedirect("./login.jsp");
+				}
 			} catch (Exception e) {
 				/**
 				 * new code == way better, if I do say so myself
 				 * sending errors to the page thru the session
 				 */
+				hasError = true;
 				errorBuffer.append("Please try again.");
+				errorBuffer.append(e.getMessage());
 
 				session.setAttribute("errors", errorBuffer.toString());
 				response.sendRedirect("./registration.jsp");

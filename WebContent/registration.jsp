@@ -34,7 +34,7 @@
 							<p class="contact">
 								<label for="EmailAddress">Email</label>
 							</p>
-							<input id="EmailAddress" name="EmailAddress" placeholder="example@domain.com" type="email">
+							<input id="EmailAddress" name="EmailAddress" placeholder="example@domain.com" type="text">
 
 							<fieldset>
 								<label>Birthday</label> <label class="month"> 
@@ -70,9 +70,9 @@
 							<p class="contact"><label for="Password">Password</label></p>
 								<input type="password" id="Password" name="Password" >
 							
-							<p class="contact"><label for="repassword">Confirm your password</label>
+							<p class="contact"><label for="Repassword">Confirm your password</label>
 							</p>
-							<input type="password" id="repassword" name="repassword">
+							<input type="password" id="Repassword" name="Repassword">
 							<br> 
 							<br> 
 							<input class="buttom"
