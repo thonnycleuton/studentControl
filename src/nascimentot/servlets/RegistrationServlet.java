@@ -110,7 +110,6 @@ public class RegistrationServlet extends HttpServlet {
 					errorBuffer.append("Phone Number not valid\n");
 				}
 
-				Date birthDate;
 				if(DaoUtil.isEmpty(request.getParameter("BirthYear")) || DaoUtil.isEmpty(request.getParameter("BirthMonth")) || DaoUtil.isEmpty(request.getParameter("BirthDay"))){
 					hasError = true;
 					errorBuffer.append("The Date Field cannot be empty");
@@ -118,23 +117,28 @@ public class RegistrationServlet extends HttpServlet {
 				else{
 
 					try {
-						birthDate = DaoUtil.stringToDate(
+						
+						int birthYear = Integer.parseInt(request.getParameter("BirthYear")); 
+						int birthMonth = Integer.parseInt(request.getParameter("BirthMonth"));
+						int birthDay = Integer.parseInt(request.getParameter("BirthDay"));
 
-								Integer.parseInt(request.getParameter("BirthYear")), 
-								Integer.parseInt(request.getParameter("BirthMonth")), 
-								Integer.parseInt(request.getParameter("BirthDay"))
-								);
-
-						aStudent.setBirthdate(birthDate);
-
-					}catch (NumberFormatException	nfe) {
-
+						if (ValidateUtil.birthYear(birthYear) && ValidateUtil.birthMonth(birthMonth) && ValidateUtil.birthDay(birthDay)){
+							System.out.println("birthYear: " + ValidateUtil.birthYear(birthYear));
+							System.out.println("BirthMonth: " + ValidateUtil.birthYear(birthMonth));
+							System.out.println("BirthDay: " + ValidateUtil.birthYear(birthDay));
+							Date birthDate = DaoUtil.stringToDate(birthYear, birthMonth, birthDay);
+							aStudent.setBirthdate(birthDate);
+						}else{
+							hasError = true;
+							errorBuffer.append("The date has an invalid value");
+						}
+					}catch (NumberFormatException nfe) {
 						hasError = true;
-						session.setAttribute("errors", "The date must to be a number");
+						errorBuffer.append("The date must to be a number");
 					} 
 
-				} 
-				
+				}
+
 				if(DaoUtil.isEmpty(request.getParameter("Password"))){
 
 					hasError = true;
@@ -157,8 +161,6 @@ public class RegistrationServlet extends HttpServlet {
 						errorBuffer.append("The passwords has an invalid format\n");
 					}
 				}
-
-
 
 				if (hasError) {
 					session.setAttribute("errors", errorBuffer.toString());
