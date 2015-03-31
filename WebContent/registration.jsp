@@ -2,12 +2,7 @@
 <%
 	String title = "Registration";
 	String errorMessage = (String) session.getAttribute("errors");
-	Student student = (Student) session.getAttribute("Student");
-	String login = (String) session.getAttribute("login");
-	if (errorMessage == null)
-		errorMessage = "";
-	if (login == null)
-		login = "";
+	Student student = (Student) session.getAttribute("aStudent");
 %>
 
 <body>
@@ -24,13 +19,13 @@
 						<p id="error"><%=errorMessage%></p>
 						<form id="contactform" method="post" action="./RegistrationServlet">
 							<p class="contact"><label for="StudentNumber">Student Number</label></p>
-							<input id="StudentNumber" name=StudentNumber placeholder="Student Number"  type="text">
+							<input id="StudentNumber" name=StudentNumber placeholder="Student Number"  type="text" value = "<%= (student != null && student.getStudentNumber() != 0) ? student.getStudentNumber():"" %>">
 						
 							<p class="contact"><label for="FirstName">First Name</label></p>
-							<input id="FirstName" name="FirstName" placeholder="First Name" type="text"">
+							<input id="FirstName" name="FirstName" placeholder="First Name" type="text" value = "<%= (student != null) ? student.getFirstName():"" %>">
 
 							<p class="contact"><label for="LastName">Last Name</label></p>
-							<input id="LastName" name="LastName" placeholder="Last Name" type="text"">
+							<input id="LastName" name="LastName" placeholder="Last Name" type="text" value = "<%= (student != null) ? student.getLastName():"" %>">
 
 							<p class="contact">
 								<label for="EmailAddress">Email</label>
@@ -40,7 +35,7 @@
 							<fieldset>
 								<label>Birthday</label> <label class="month"> 
 									<select class="select-style" name="BirthMonth">
-										<option value="">Month</option>
+										<option value="3">Month</option>
 										<option value="01">January</option>
 										<option value="02">February</option>
 										<option value="03">March</option>
@@ -54,11 +49,8 @@
 										<option value="11">November</option>
 										<option value="12">December</option></label> 
 									</select> 
-								<label>Day<input
-									class="birthday" maxlength="2" name="BirthDay"
-									placeholder="DD"></label> <label>Year <input
-									class="birthyear" maxlength="4" name="BirthYear"
-									placeholder="YYYY"></label>
+								<label>Day<input class="birthday" maxlength="2" name="BirthDay" placeholder="DD" ></label>
+								<label>Year <input class="birthyear" maxlength="4" name="BirthYear" placeholder="YYYY"></label>
 							</fieldset>
 
 							<p class="contact">
@@ -66,7 +58,7 @@
 							</p>
 							
 							<input id="PhoneNumber" name="PhoneNumber" placeholder="Phone Number"
-								 type="text"> 
+								 type="text" value = "<%= (student != null) ? student.getPhone():"" %>"> 
 								
 							<p class="contact"><label for="Password">Password</label></p>
 								<input type="password" id="Password" name="Password" >

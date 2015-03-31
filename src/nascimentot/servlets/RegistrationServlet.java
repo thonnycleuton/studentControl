@@ -64,14 +64,13 @@ public class RegistrationServlet extends HttpServlet {
 					 * try to convert the student number to integer
 					 */
 					try{
-
-						aStudent.setStudentNumber(Integer.parseInt(request.getParameter("StudentNumber")));
-
-						if(aStudent.getStudentNumber() < DaoUtil.MINIMUM_STUDENT_NUMBER || aStudent.getStudentNumber() > DaoUtil.MAXIMUM_STUDENT_NUMBER){
+						int studentNumber = Integer.parseInt(request.getParameter("StudentNumber"));
+						if(studentNumber < DaoUtil.MINIMUM_STUDENT_NUMBER || studentNumber > DaoUtil.MAXIMUM_STUDENT_NUMBER){
 
 							errorBuffer.append("The StudentNumber must be between "+ DaoUtil.MINIMUM_STUDENT_NUMBER +" and "+ DaoUtil.MINIMUM_STUDENT_NUMBER);
 
-						}
+						}else
+							aStudent.setStudentNumber(studentNumber);
 					} catch (NumberFormatException nfe){
 						hasError = true;
 						errorBuffer.append("The Student Number must be a number\n");
@@ -81,7 +80,6 @@ public class RegistrationServlet extends HttpServlet {
 				aStudent.setFirstName(request.getParameter("FirstName"));
 				aStudent.setLastName(request.getParameter("LastName"));
 
-				 
 				/**
 				 *  Validating student email field
 				 */
@@ -174,7 +172,7 @@ public class RegistrationServlet extends HttpServlet {
 
 				if (hasError) {
 					session.setAttribute("errors", errorBuffer.toString());
-					session.setAttribute("Student", aStudent);
+					session.setAttribute("aStudent", aStudent);
 					response.sendRedirect("./registration.jsp");
 				}else{
 
