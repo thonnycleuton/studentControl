@@ -6,10 +6,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import nascimentot.dao.StudentConnect;
-import nascimentot.exception.StudentNotFoundException;
 import nascimentot.model.Student;
 import nascimentot.util.DaoUtil;
-import nascimentot.util.EmailValidator;
 import nascimentot.util.ValidateUtil;
 
 import java.sql.*;
@@ -18,8 +16,8 @@ import java.util.Date;
 /**
  * This Class is responsible to authenticate the user on system.
  *@author Thonny
- *@since 1.0
- *@version 2.0 (12-03-15)
+ *@since 2.0
+ *@version 4.0 (30-03-15)
  */
 
 @SuppressWarnings("serial")
@@ -62,14 +60,16 @@ public class RegistrationServlet extends HttpServlet {
 				} 
 				else {
 
-					/*try convert the student number in a integer*/
+					/**
+					 * try to convert the student number to integer
+					 */
 					try{
 
 						aStudent.setStudentNumber(Integer.parseInt(request.getParameter("StudentNumber")));
 
 						if(aStudent.getStudentNumber() < DaoUtil.MINIMUM_STUDENT_NUMBER || aStudent.getStudentNumber() > DaoUtil.MAXIMUM_STUDENT_NUMBER){
 
-							errorBuffer.append("The StudentNumber must be between 100000000 and 999999999.");
+							errorBuffer.append("The StudentNumber must be between "+ DaoUtil.MINIMUM_STUDENT_NUMBER +" and "+ DaoUtil.MINIMUM_STUDENT_NUMBER);
 
 						}
 					} catch (NumberFormatException nfe){
@@ -78,10 +78,13 @@ public class RegistrationServlet extends HttpServlet {
 					}
 				}
 
-
 				aStudent.setFirstName(request.getParameter("FirstName"));
 				aStudent.setLastName(request.getParameter("LastName"));
 
+				 
+				/**
+				 *  Validating student email field
+				 */
 				if(DaoUtil.isEmpty(request.getParameter("EmailAddress"))){
 					hasError = true;
 					errorBuffer.append("The Email Address cannot be empty!\n");
@@ -96,7 +99,10 @@ public class RegistrationServlet extends HttpServlet {
 					errorBuffer.append("Email not valid valid\n");
 
 				}
-
+				 
+				/**
+				 *  Validating student phone number field
+				 */
 				if(DaoUtil.isEmpty(request.getParameter("PhoneNumber"))){
 
 					hasError = true;
@@ -110,6 +116,9 @@ public class RegistrationServlet extends HttpServlet {
 					errorBuffer.append("Phone Number not valid\n");
 				}
 
+				/**
+				 *  Validating student Birth date field
+				 */
 				if(DaoUtil.isEmpty(request.getParameter("BirthYear")) || DaoUtil.isEmpty(request.getParameter("BirthMonth")) || DaoUtil.isEmpty(request.getParameter("BirthDay"))){
 					hasError = true;
 					errorBuffer.append("The Date Field cannot be empty");
@@ -137,6 +146,9 @@ public class RegistrationServlet extends HttpServlet {
 
 				}
 
+				/**
+				 *  Validating student password field
+				 */
 				if(DaoUtil.isEmpty(request.getParameter("Password"))){
 
 					hasError = true;
@@ -162,6 +174,7 @@ public class RegistrationServlet extends HttpServlet {
 
 				if (hasError) {
 					session.setAttribute("errors", errorBuffer.toString());
+					session.setAttribute("Student", aStudent);
 					response.sendRedirect("./registration.jsp");
 				}else{
 

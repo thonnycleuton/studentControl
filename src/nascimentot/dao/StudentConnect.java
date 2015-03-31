@@ -10,13 +10,12 @@ import java.sql.SQLException;
 import nascimentot.model.Student;
 
 /**
- * This Class creates a model of Student.
+ * This Class makes transactions with the Database.
  *@author Thonny
  *@since 1.0
  *@version 1.0 (08-03-15)
  */
 
-//This Class makes transations with the Database
 public class StudentConnect {
 
 	static Student aStudent;

@@ -15,8 +15,8 @@ import java.sql.*;
 /**
  * This Class is responsible to authenticate the user on system.
  *@author Thonny
- *@since 1.0
- *@version 2.0 (12-03-15)
+ *@since 3.0
+ *@version 2.0 (27-03-15)
  */
 
 @SuppressWarnings("serial")

@@ -16,39 +16,80 @@ import nascimentot.model.Mark;
 import nascimentot.model.Student;
 
 /**
- * This Class creates a model of Student.
+ * This Class persists the student model on Database.
  *@author Thonny
  *@since 1.0
- *@version 2.0 (12-03-15)
+ *@version 4.0 (30-03-15)
  */
 public class StudentDA {
+	
+	/**
+	 * Instantiate a new student
+	 */
+	private static Student aStudent = null;
+	/**
+	 * Instantiate a new connection with Data Base
+	 */
+	private static Connection aConnection;
+	/**
+	 * Instantiate a new Statement
+	 */
+	private static Statement aStatement;
+	/**
+	 * number of identification from student
+	 */
+	private static int studentNumber;
+	/**
+	 * key to control access to system
+	 */
+	private static String password;
+	/**
+	 * First Name of Student
+	 */
+	private static String firstName;
+	/**
+	 * Last Name of Student
+	 */
+	private static String lastName;
+	/**
+	 * Birthday of the Student
+	 */
+	private static Date birthdate;
+	/**
+	 * Email from student
+	 */
+	private static String email;
+	/**
+	 * Telephone from Student
+	 */
+	private static String phone;
 
 	/**
-	 * 
+	 * Set of Marks from Student
 	 */
-	static Student aStudent = null;
-	static Connection aConnection;
-	static Statement aStatement;
-	static String name;
-	static int studentNumber;
-	static String password;
-	static String firstName;
-	static String lastName;
-	static Date birthdate;
-	static String email;
-	static String phone;
-	
-	static Mark mark;
-	static String courseCode;
-	static String courseTitle;
-	static float GPAWeighting;
-	static int result;
+	private static Mark mark;
+	/**
+	 * Course code
+	 */
+	private static String courseCode;
+	/**
+	 * Couse Title
+	 */
+	private static String courseTitle;
+	/**
+	 * Grade Pondered Average Weighting
+	 */
+	private static float GPAWeighting;
+	/**
+	 * Result a value from marks
+	 */
+	private static int result;
 	
 	/**
 	 * Constructor Default
 	 */
 	public StudentDA() {
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	/**
@@ -85,7 +126,9 @@ public class StudentDA {
 		}
 	}
 
-	// close the database connection
+	/**
+	 *  close the database connection
+	 */
 	public static void terminate(){
 		try{ 	// close the statement
 			aStatement.close();
@@ -102,7 +145,9 @@ public class StudentDA {
 	 */
 	public static Student find(int aStudentNumber) throws StudentNotFoundException{
 
-		// define the SQL query statement using the phone number key
+		/**
+		 *  define the SQL query statement using the phone number key
+		 */
 		String sqlQuery = "SELECT \"StudentNumber\", \"Password\", \"FirstName\", \"LastName\", \"BirthDate\", \"EmailAddress\", \"PhoneNumber\""
 				+ "FROM \"Students\" "
 				+ "WHERE \"StudentNumber\" = '"+ aStudentNumber +"';";
@@ -142,7 +187,11 @@ public class StudentDA {
 		return aStudent;
 	}
 
-	//Check if there is already a student number in database 
+	/**
+	 * Check if there is already a student number in database 
+	 * @param login
+	 * @return
+	 */
 	public static boolean isExistingLogin(int login) {
 
 		boolean exists = false;                  
@@ -150,7 +199,6 @@ public class StudentDA {
 			Student.find(login);
 			exists = true;
 		} catch (StudentNotFoundException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		return exists;
@@ -164,14 +212,20 @@ public class StudentDA {
 
 		Vector<Student> students = new Vector<Student>();
 		
-		// define the SQL query statement using the phone number key
+		/**
+		 *  define the SQL query statement using the phone number key
+		 */
 		String sqlQuery = "SELECT \"StudentNumber\", \"Password\", \"FirstName\", \"LastName\", \"BirthDate\", \"EmailAddress\", \"PhoneNumber\""
 				+ "FROM \"Students\" ";
 
-		// execute the SQL query statement
+		/**
+		 *  execute the SQL query statement
+		 */
 		try{
 			ResultSet rs = aStatement.executeQuery(sqlQuery);
-			// next method sets cursor & returns true if there is data
+			/**
+			 *  next method sets cursor & returns true if there is data
+			 */
 			boolean gotIt = rs.next();
 
 			do{// extract the data
@@ -249,7 +303,9 @@ public class StudentDA {
 	 */
 	public static void insert(Student aStudent) throws DuplicateStudentException {
 
-		// define the SQL query statement using the phone number key
+		/**
+		 *  define the SQL query statement using the phone number key
+		 */
 		String sqlQuery = "INSERT INTO \"Students\"(\"StudentNumber\", \"Password\", \"FirstName\", \"LastName\", \"BirthDate\", \"EmailAddress\", \"PhoneNumber\")"
 				+ "VALUES (" 
 				+ aStudent.getStudentNumber() + ", " 
@@ -260,7 +316,9 @@ public class StudentDA {
 				+ aStudent.getEmail() + "', '"
 				+ aStudent.getPhone() + "');";
 
-		//check if there is some students in the database with the same Student Number
+		/**
+		 * check if there is some students in the database with the same Student Number
+		 */
 		if (Student.isExistingLogin(aStudent.getStudentNumber()) != true){
 
 			try {
@@ -315,7 +373,9 @@ public class StudentDA {
 	 */
 	public static void delete(Student aStudent) throws StudentNotFoundException{
 
-		// define the SQL query statement using the phone number key
+		/**
+		 *  define the SQL query statement using the phone number key
+		 */
 		String sqlQuery = "DELETE FROM \"Students\" "
 				+ "WHERE \"StudentNumber\" = '"+ aStudent.getStudentNumber() +"';";
 

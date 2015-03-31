@@ -2,6 +2,7 @@
 <%
 	String title = "Registration";
 	String errorMessage = (String) session.getAttribute("errors");
+	Student student = (Student) session.getAttribute("Student");
 	String login = (String) session.getAttribute("login");
 	if (errorMessage == null)
 		errorMessage = "";
@@ -26,15 +27,15 @@
 							<input id="StudentNumber" name=StudentNumber placeholder="Student Number"  type="text">
 						
 							<p class="contact"><label for="FirstName">First Name</label></p>
-							<input id="FirstName" name="FirstName" placeholder="First Name" type="text">
+							<input id="FirstName" name="FirstName" placeholder="First Name" type="text"">
 
 							<p class="contact"><label for="LastName">Last Name</label></p>
-							<input id="LastName" name="LastName" placeholder="Last Name" type="text">
+							<input id="LastName" name="LastName" placeholder="Last Name" type="text"">
 
 							<p class="contact">
 								<label for="EmailAddress">Email</label>
 							</p>
-							<input id="EmailAddress" name="EmailAddress" placeholder="example@domain.com" type="text">
+							<input id="EmailAddress" name="EmailAddress" placeholder="example@domain.com" type="text" value = "<%= (student != null) ? student.getEmail():"" %>">
 
 							<fieldset>
 								<label>Birthday</label> <label class="month"> 
