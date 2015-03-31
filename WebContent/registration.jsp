@@ -1,7 +1,12 @@
 <%@ page import="nascimentot.model.*"%>
 <%
 	String title = "Registration";
-	String errorMessage = (String) session.getAttribute("errors");
+	String studentNumberError = (String) session.getAttribute("studentNumberError");
+	String emailAddressError = (String) session.getAttribute("emailAddressError");
+	String birthDateError = (String) session.getAttribute("birthDateError");
+	String phoneNumberError = (String) session.getAttribute("phoneNumberError");
+	String passwordError = (String) session.getAttribute("passwordError");
+	String repasswordError = (String) session.getAttribute("repasswordError");
 	Student student = (Student) session.getAttribute("aStudent");
 %>
 
@@ -16,9 +21,9 @@
 				<%@ include file="header.jsp"%>
 				<div class="main">
 					<div class="form">
-						<p id="error"><%=errorMessage%></p>
+						
 						<form id="contactform" method="post" action="./RegistrationServlet">
-							<p class="contact"><label for="StudentNumber">Student Number</label></p>
+							<p class="contact"><label for="StudentNumber">Student Number</label><p id="error"><%=(studentNumberError != null)?studentNumberError:""	%></p>
 							<input id="StudentNumber" name=StudentNumber placeholder="Student Number"  type="text" value = "<%= (student != null && student.getStudentNumber() != 0) ? student.getStudentNumber():"" %>">
 						
 							<p class="contact"><label for="FirstName">First Name</label></p>
@@ -27,15 +32,14 @@
 							<p class="contact"><label for="LastName">Last Name</label></p>
 							<input id="LastName" name="LastName" placeholder="Last Name" type="text" value = "<%= (student != null) ? student.getLastName():"" %>">
 
-							<p class="contact">
-								<label for="EmailAddress">Email</label>
+							<p class="contact"><label for="EmailAddress">Email</label><p id="error"><%=(emailAddressError!=null) ? emailAddressError :"" %></p>
 							</p>
 							<input id="EmailAddress" name="EmailAddress" placeholder="example@domain.com" type="text" value = "<%= (student != null) ? student.getEmail():"" %>">
 
 							<fieldset>
 								<label>Birthday</label> <label class="month"> 
 									<select class="select-style" name="BirthMonth">
-										<option value="3">Month</option>
+										<option value="">Month</option>
 										<option value="01">January</option>
 										<option value="02">February</option>
 										<option value="03">March</option>
@@ -50,20 +54,20 @@
 										<option value="12">December</option></label> 
 									</select> 
 								<label>Day<input class="birthday" maxlength="2" name="BirthDay" placeholder="DD" ></label>
-								<label>Year <input class="birthyear" maxlength="4" name="BirthYear" placeholder="YYYY"></label>
+								<label>Year <input class="birthyear" maxlength="4" name="BirthYear" placeholder="YYYY"></label><p id="error"><%=(birthDateError!=null) ? birthDateError :"" %></p>
 							</fieldset>
 
 							<p class="contact">
-								<label for="PhoneNumber">Phone Number</label>
+								<label for="PhoneNumber">Phone Number</label><p id="error"><%=(phoneNumberError!=null) ? phoneNumberError :"" %></p>
 							</p>
 							
 							<input id="PhoneNumber" name="PhoneNumber" placeholder="Phone Number"
 								 type="text" value = "<%= (student != null) ? student.getPhone():"" %>"> 
 								
-							<p class="contact"><label for="Password">Password</label></p>
+							<p class="contact"><label for="Password">Password</label><p id="error"><%=(passwordError!=null) ? passwordError :"" %></p>
 								<input type="password" id="Password" name="Password" >
 							
-							<p class="contact"><label for="Repassword">Confirm your password</label>
+							<p class="contact"><label for="Repassword">Confirm your password</label><p id="error"><%=(repasswordError!=null) ? repasswordError :"" %></p>
 							</p>
 							<input type="password" id="Repassword" name="Repassword">
 							<br> 

@@ -17,7 +17,6 @@ http://www.freshdesignweb.com/beautiful-registration-form-with-html5-and-css3.ht
 
 .form p.contact {
 	font-size: 12px;
-	margin: 0px 0px 10px 0;
 	line-height: 14px;
 	font-family: Arial, Helvetica;
 }
@@ -62,7 +61,6 @@ http://www.freshdesignweb.com/beautiful-registration-form-with-html5-and-css3.ht
 	font-size: 14px;
 	-webkit-border-radius: 5px;
 	margin-bottom: 15px;
-	margin-top: -10px;
 }
 
 .form input:focus, textarea:focus {
@@ -120,4 +118,8 @@ http://www.freshdesignweb.com/beautiful-registration-form-with-html5-and-css3.ht
 
 .form input.buttom:hover {
 	background-color: #2a78f6;
+}
+#error {	
+  color: red;
+}
 }

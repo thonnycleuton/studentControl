@@ -26,6 +26,7 @@ public class RegistrationServlet extends HttpServlet {
 	/** (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
+	@SuppressWarnings("null")
 	public void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException{
 
@@ -47,7 +48,12 @@ public class RegistrationServlet extends HttpServlet {
 			 */
 
 			Student aStudent = new Student();
-			StringBuffer errorBuffer = new StringBuffer();
+			String studentNumberError = "";
+			String emailAddressError = "";
+			String birthDateError = "";
+			String phoneNumberError = "";
+			String passwordError = "";
+			String repasswordError = "";
 			boolean hasError = false;
 			try {
 				/**
@@ -55,7 +61,7 @@ public class RegistrationServlet extends HttpServlet {
 				 */
 				if(DaoUtil.isEmpty(request.getParameter("StudentNumber"))){
 					hasError = true;
-					errorBuffer.append("The student number cannot be empty!");
+					studentNumberError = ("The student number cannot be empty!");
 
 				} 
 				else {
@@ -67,13 +73,13 @@ public class RegistrationServlet extends HttpServlet {
 						int studentNumber = Integer.parseInt(request.getParameter("StudentNumber"));
 						if(studentNumber < DaoUtil.MINIMUM_STUDENT_NUMBER || studentNumber > DaoUtil.MAXIMUM_STUDENT_NUMBER){
 
-							errorBuffer.append("The StudentNumber must be between "+ DaoUtil.MINIMUM_STUDENT_NUMBER +" and "+ DaoUtil.MINIMUM_STUDENT_NUMBER);
+							studentNumberError = ("The StudentNumber must be between "+ DaoUtil.MINIMUM_STUDENT_NUMBER +" and "+ DaoUtil.MINIMUM_STUDENT_NUMBER);
 
 						}else
 							aStudent.setStudentNumber(studentNumber);
 					} catch (NumberFormatException nfe){
 						hasError = true;
-						errorBuffer.append("The Student Number must be a number\n");
+						studentNumberError = ("The Student Number must be a number\n");
 					}
 				}
 
@@ -85,7 +91,7 @@ public class RegistrationServlet extends HttpServlet {
 				 */
 				if(DaoUtil.isEmpty(request.getParameter("EmailAddress"))){
 					hasError = true;
-					errorBuffer.append("The Email Address cannot be empty!\n");
+					emailAddressError = ("The Email Address cannot be empty!\n");
 
 				} else if (ValidateUtil.email(request.getParameter("EmailAddress"))){
 
@@ -94,7 +100,7 @@ public class RegistrationServlet extends HttpServlet {
 				}else {
 
 					hasError = true;
-					errorBuffer.append("Email not valid valid\n");
+					emailAddressError = ("Email not valid valid\n");
 
 				}
 				 
@@ -104,14 +110,14 @@ public class RegistrationServlet extends HttpServlet {
 				if(DaoUtil.isEmpty(request.getParameter("PhoneNumber"))){
 
 					hasError = true;
-					errorBuffer.append("The Phone Number cannot be empty!\n");
+					phoneNumberError = ("The Phone Number cannot be empty!\n");
 
 				} else if (ValidateUtil.phone(request.getParameter("PhoneNumber"))){
 					aStudent.setPhone(request.getParameter("PhoneNumber"));
 				}
 				else{
 					hasError = true;
-					errorBuffer.append("Phone Number not valid\n");
+					phoneNumberError = ("Phone Number not valid\n");
 				}
 
 				/**
@@ -119,7 +125,7 @@ public class RegistrationServlet extends HttpServlet {
 				 */
 				if(DaoUtil.isEmpty(request.getParameter("BirthYear")) || DaoUtil.isEmpty(request.getParameter("BirthMonth")) || DaoUtil.isEmpty(request.getParameter("BirthDay"))){
 					hasError = true;
-					errorBuffer.append("The Date Field cannot be empty");
+					birthDateError = ("The Date Field cannot be empty");
 				}
 				else{
 
@@ -135,11 +141,11 @@ public class RegistrationServlet extends HttpServlet {
 							aStudent.setBirthdate(birthDate);
 						}else{
 							hasError = true;
-							errorBuffer.append("The date has an invalid value");
+							birthDateError = ("The date has an invalid value");
 						}
 					}catch (NumberFormatException nfe) {
 						hasError = true;
-						errorBuffer.append("The date must to be a number");
+						birthDateError = ("The date must to be a number");
 					} 
 
 				}
@@ -150,7 +156,7 @@ public class RegistrationServlet extends HttpServlet {
 				if(DaoUtil.isEmpty(request.getParameter("Password"))){
 
 					hasError = true;
-					errorBuffer.append("The Password cannot be empty!\n");
+					passwordError = ("The Password cannot be empty!\n");
 
 				}
 				else{
@@ -160,18 +166,23 @@ public class RegistrationServlet extends HttpServlet {
 						}
 						else{
 							hasError = true;
-							errorBuffer.append("The passwords entered are not the same\n");
+							repasswordError = ("The passwords entered are not the same\n");
 						}
 					}
 					else{
 
 						hasError = true;
-						errorBuffer.append("The passwords has an invalid format\n");
+						passwordError = ("The passwords has an invalid format\n");
 					}
 				}
 
 				if (hasError) {
-					session.setAttribute("errors", errorBuffer.toString());
+					session.setAttribute("studentNumberError", studentNumberError);
+					session.setAttribute("emailAddressError", emailAddressError);
+					session.setAttribute("birthDateError", birthDateError);
+					session.setAttribute("phoneNumberError", phoneNumberError);
+					session.setAttribute("passwordError", passwordError);
+					session.setAttribute("repasswordError", repasswordError);
 					session.setAttribute("aStudent", aStudent);
 					response.sendRedirect("./registration.jsp");
 				}else{
@@ -188,10 +199,13 @@ public class RegistrationServlet extends HttpServlet {
 				 * sending errors to the page thru the session
 				 */
 				hasError = true;
-				errorBuffer.append("Please try again.");
-				errorBuffer.append(e.getMessage());
-
-				session.setAttribute("errors", errorBuffer.toString());
+				session.setAttribute("studentNumberError", studentNumberError);
+				session.setAttribute("emailAddressError", emailAddressError);
+				session.setAttribute("birthDateError", birthDateError);
+				session.setAttribute("phoneNumberError", phoneNumberError);
+				session.setAttribute("passwordError", passwordError);
+				session.setAttribute("repasswordError", repasswordError);
+				session.setAttribute("aStudent", aStudent);
 				response.sendRedirect("./registration.jsp");
 			}
 
